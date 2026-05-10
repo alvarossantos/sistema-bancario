@@ -1,0 +1,13 @@
+projeto_bancario/
+│
+├── main.py              # Ponto de entrada (inicia o sistema)
+├── database.py          # Conexão central com o PostgreSQL (psycopg2)
+├── models/              # Classes que representam as tabelas e lógica de dados
+│   ├── usuario.py
+│   ├── conta.py
+│   └── transacao.py
+├── controllers/         # Regras de negócio e intermediação
+│   ├── banco_controller.py
+│   └── login_controller.py
+└── views/               # Interação com o usuário (menus e inputs)
+    └── menu_view.py
