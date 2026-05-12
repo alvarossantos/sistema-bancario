@@ -26,7 +26,7 @@ class UsuarioModel:
             self.cpf = cpf
         else:
             raise ValueError(
-                f"CPF inválido, somente números são aceitos e deve ter 11 dígitos."
+                "CPF inválido, somente números são aceitos e deve ter 11 dígitos."
             )
 
     def verificar_email(self, email):

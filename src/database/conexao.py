@@ -7,7 +7,7 @@ load_dotenv()
 
 
 class BancoDeDados:
-    def __int__(self):
+    def __init__(self):
         self.config = {
             "dbname": os.getenv("DB_NAME"),
             "user": os.getenv("DB_USER"),
