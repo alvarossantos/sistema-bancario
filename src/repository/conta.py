@@ -37,3 +37,44 @@ class ContaRepository:
         
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
+    
+    def buscar_por_id(self, id: int):
+        sql = """
+        SELECT * FROM contas WHERE id = %s;
+        """
+        params = (id)
+        
+        with BancoDeDados() as cursor:
+            cursor.execute(sql, params)
+            return cursor.fetchone()
+    
+    def buscar_por_conta(self, numero_conta: int):
+        sql = """
+        SELECT * FROM contas WHERE numero_conta = %s;
+        """
+        params = (numero_conta)
+        
+        with BancoDeDados() as cursor:
+            cursor.execute(sql, params)
+            return cursor.fetchone()
+    
+    def buscar_por_usuario(self, usuario_id: int):
+        sql = """
+        SELECT * FROM contas WHERE usuario_id = %s;
+        """
+        params = (usuario_id)
+        
+        with BancoDeDados() as cursor:
+            cursor.execute(sql, params)
+            return cursor.fetchall()
+    
+    def desativar_conta(self, usuario: UsuarioModel):
+        sql = """
+        UPDATE contas SET ativa = %s WHERE usuario_id = %s
+        RETURNING id;
+        """
+        params = (False, usuario.id)
+        
+        with BancoDeDados() as cursor:
+            cursor.execute(sql, params)
+            return cursor.fetchone()
