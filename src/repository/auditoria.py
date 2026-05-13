@@ -1,3 +1,7 @@
+from model.auditoria import AuditoriaModel
+from database.conexao import BancoDeDados
+
+
 class AuditoriaRepository:
     def criar(self, auditoria: AuditoriaModel):
         sql = """

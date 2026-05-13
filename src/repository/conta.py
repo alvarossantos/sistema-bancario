@@ -1,3 +1,8 @@
+from model.conta import ContaModel
+from model.usuario import UsuarioModel
+from database.conexao import BancoDeDados
+
+
 class ContaRepository:
     def criar(self, conta: ContaModel):
         sql = """
@@ -25,7 +30,7 @@ class ContaRepository:
         UPDATE contas SET numero_conta = %s, agencia = %s, tipo = %s, saldo = %s, limite_emprestimo = %s, ativa = %s WHERE id = %s
         RETURNING id;
         """
-        params = {
+        params = (
             conta.numero_conta,
             conta.agencia,
             conta.tipo,
@@ -33,7 +38,7 @@ class ContaRepository:
             conta.limite_emprestimo,
             conta.ativa,
             conta.id,
-        }
+        )
         
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
@@ -42,7 +47,7 @@ class ContaRepository:
         sql = """
         SELECT * FROM contas WHERE id = %s;
         """
-        params = (id)
+        params = (id,)
         
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
@@ -52,7 +57,7 @@ class ContaRepository:
         sql = """
         SELECT * FROM contas WHERE numero_conta = %s;
         """
-        params = (numero_conta)
+        params = (numero_conta,)
         
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
@@ -62,7 +67,7 @@ class ContaRepository:
         sql = """
         SELECT * FROM contas WHERE usuario_id = %s;
         """
-        params = (usuario_id)
+        params = (usuario_id,)
         
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)

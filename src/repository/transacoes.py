@@ -1,3 +1,7 @@
+from model.transacoes import TransacoesModel
+from database.conexao import BancoDeDados
+
+
 class TransacoesRepository:
     def criar(self, transacao: TransacoesModel):
         sql = """
@@ -23,7 +27,7 @@ class TransacoesRepository:
         sql = """
         SELECT * FROM transacoes WHERE id = %s;
         """
-        params = (id)
+        params = (id,)
         
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)

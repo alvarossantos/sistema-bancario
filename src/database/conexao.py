@@ -19,6 +19,7 @@ class BancoDeDados:
     def __enter__(self):
         self.conn = psycopg2.connect(**self.config)
         self.cursor = self.conn.cursor()
+        return self.cursor
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_tb is None:
