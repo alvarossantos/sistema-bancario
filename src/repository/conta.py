@@ -10,7 +10,7 @@ class ContaRepository:
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         RETURNING id;
         """
-        params = {
+        params = (
             conta.usuario_id,
             conta.numero_conta,
             conta.agencia,
@@ -18,7 +18,7 @@ class ContaRepository:
             conta.saldo,
             conta.limite_emprestimo,
             conta.ativa,
-        }
+        )
         
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
