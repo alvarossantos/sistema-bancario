@@ -1,6 +1,6 @@
-from model.conta import ContaModel
-from model.usuario import UsuarioModel
-from database.conexao import BancoDeDados
+from src.model.conta import ContaModel
+from src.model.usuario import UsuarioModel
+from src.database.conexao import BancoDeDados
 
 
 class ContaRepository:

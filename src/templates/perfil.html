@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
+    <h4>Meu Perfil Pessoal</h4>
+    <form action="/perfil" method="POST">
+        <div class="mb-3">
+            <label>Nome Completo</label>
+            <input type="text" name="nome" class="form-control" value="{{ usuario.nome }}">
+        </div>
+        <div class="mb-3">
+            <label>E-mail</label>
+            <input type="email" name="email" class="form-control" value="{{ usuario.email }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Alterações</button>
+    </form>
+</div>
+{% endblock %}

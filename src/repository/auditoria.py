@@ -1,5 +1,5 @@
-from model.auditoria import AuditoriaModel
-from database.conexao import BancoDeDados
+from src.model.auditoria import AuditoriaModel
+from src.database.conexao import BancoDeDados
 
 
 class AuditoriaRepository:

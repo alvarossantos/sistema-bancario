@@ -1,6 +1,5 @@
-from model.usuario import UsuarioModel
-
-from database.conexao import BancoDeDados
+from src.model.usuario import UsuarioModel
+from src.database.conexao import BancoDeDados
 
 
 class UsuarioRepository:
@@ -39,3 +38,13 @@ class UsuarioRepository:
 
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
+
+    def buscar_por_email(self, email: str):
+        sql = """
+        SELECT * FROM usuarios WHERE email = %s;
+        """
+        params = (email,)
+        
+        with BancoDeDados() as cursor:
+            cursor.execute(sql, params)
+            return cursor.fetchone()

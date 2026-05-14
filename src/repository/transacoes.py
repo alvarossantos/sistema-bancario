@@ -1,5 +1,5 @@
-from model.transacoes import TransacoesModel
-from database.conexao import BancoDeDados
+from src.model.transacoes import TransacoesModel
+from src.database.conexao import BancoDeDados
 
 
 class TransacoesRepository:
@@ -41,4 +41,13 @@ class TransacoesRepository:
         
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
+            return cursor.fetchall()
+    
+    def listar_todos(self):
+        sql = """
+        SELECT * FROM transacoes;
+        """
+        
+        with BancoDeDados() as cursor:
+            cursor.execute(sql)
             return cursor.fetchall()
