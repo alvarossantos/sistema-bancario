@@ -1,5 +1,5 @@
 -- =========================================================
--- ESQUEMA BANCÁRIO AVANÇADO
+-- ESQUEMA BANCÁRIO AVANÇADO - NEXBANK
 -- =========================================================
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -126,6 +126,7 @@ CREATE TRIGGER trg_auditoria_saldo AFTER UPDATE ON contas FOR EACH ROW EXECUTE F
 
 -- =========================================================
 -- FUNÇÃO DE TRANSFERÊNCIA (Versão Robusta)
+-- (Esta função no banco é uma excelente camada de segurança extra)
 -- =========================================================
 
 CREATE OR REPLACE FUNCTION realizar_transferencia(
@@ -169,7 +170,9 @@ BEGIN
 
 EXCEPTION
     WHEN OTHERS THEN
-        -- Aqui você poderia inserir um registro em transacoes com status 'falhou' antes de propagar o erro
         RAISE;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Criação do Usuário com privilégio Administrador
+UPDATE usuarios SET is_admin = true WHERE email = 'admin@nexbank.com';

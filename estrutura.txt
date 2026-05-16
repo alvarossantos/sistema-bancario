@@ -1,13 +1,26 @@
-projeto_bancario/
+sistema-bancario/
 │
-├── main.py              # Ponto de entrada (inicia o sistema)
-├── database.py          # Conexão central com o PostgreSQL (psycopg2)
-├── models/              # Classes que representam as tabelas e lógica de dados
-│   ├── usuario.py
-│   ├── conta.py
-│   └── transacao.py
-├── controllers/         # Regras de negócio e intermediação
-│   ├── banco_controller.py
-│   └── login_controller.py
-└── views/               # Interação com o usuário (menus e inputs)
-    └── menu_view.py
+├── app.py                     # Ponto de entrada (Aplicação Flask e rotas)
+├── banco.sql                  # Esquema do banco de dados PostgreSQL, triggers e procedures
+├── estrutura.txt              # Documentação da estrutura do projeto
+├── README.md                  # Documentação principal do projeto
+└── src/
+    ├── controllers/           # Regras de negócio e orquestração
+    │   ├── conta_controller.py
+    │   └── usuario_controller.py
+    ├── database/              # Conexão e gerenciamento do Banco de Dados
+    │   └── conexao.py
+    ├── models/                # Classes que representam os dados e validações (Entidades)
+    │   ├── conta.py
+    │   ├── transacoes.py
+    │   └── usuario.py
+    ├── repository/            # Camada de Acesso a Dados (Data Access Layer)
+    │   ├── conta.py
+    │   ├── transacoes.py
+    │   └── usuario.py
+    └── views/
+        └── templates/         # Templates HTML para o frontend renderizado pelo Flask
+            ├── index.html, login.html, cadastro.html
+            ├── user_dashboard.html, perfil.html
+            ├── extrato.html, comprovante.html
+            └── admin_dashboard.html, admin_clientes.html, admin_transacoes.html
