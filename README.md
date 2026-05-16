@@ -1,8 +1,3 @@
-Com certeza! O seu ficheiro `README.md` atual já está muito bom e explica bem a arquitetura. No entanto, podemos torná-lo ainda mais atrativo, profissional e completo, adicionando "badges" (selos visuais), destacando as tecnologias de frontend (como o Bootstrap 5 e o Chart.js que utilizámos) e corrigindo a secção de instalação (uma vez que agora você tem um ficheiro `requirements.txt` completo).
-
-Aqui está uma versão melhorada e muito mais elegante do seu `README.md`. Pode copiar este código e substituir o conteúdo atual do seu ficheiro:
-
-```markdown
 # 🏦 NexBank - Sistema Bancário Web
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg?logo=python&logoColor=white)
