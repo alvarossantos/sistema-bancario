@@ -178,6 +178,14 @@ def perfil():
         flash("Perfil atualizado!", "success")
     return render_template('perfil.html', usuario=usuario)
 
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    if not e_admin():
+        return "Acesso Negado!", 403
+    
+    metricas = conta_controller.obter_metricas_admin()
+    return render_template('admin_dashboard.html', m=metricas)
+
 @app.route('/admin/clientes')
 def admin_clientes():
     if not e_admin():

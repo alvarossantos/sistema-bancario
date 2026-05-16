@@ -115,4 +115,3 @@ class ContaRepository:
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
             return cursor.fetchone()
-        

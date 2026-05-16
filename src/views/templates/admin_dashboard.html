@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="slide-up">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark"><i class="fas fa-chart-pie text-warning me-2"></i> Painel Analítico Geral</h2>
+        <span class="badge bg-dark fs-6 rounded-pill shadow-sm py-2 px-4 mt-2 mt-md-0">
+            <i class="fas fa-sync-alt fa-spin me-1"></i> Atualizado em tempo real
+        </span>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 card-hover border-start border-primary border-4">
+                <div class="text-muted small fw-bold text-uppercase">Volume de Depósitos</div>
+                <div class="fs-3 fw-bold text-dark mt-1">R$ {{ "%.2f"|format(m.total_deposito|default(0)) }}</div>
+                <div class="small text-muted mt-1"><i class="fas fa-arrow-down text-success"></i> {{ m.qtd_deposito }} operações</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 card-hover border-start border-danger border-4">
+                <div class="text-muted small fw-bold text-uppercase">Volume de Saques</div>
+                <div class="fs-3 fw-bold text-dark mt-1">R$ {{ "%.2f"|format(m.total_saque|default(0)) }}</div>
+                <div class="small text-muted mt-1"><i class="fas fa-arrow-up text-danger"></i> {{ m.qtd_saque }} operações</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 card-hover border-start border-warning border-4">
+                <div class="text-muted small fw-bold text-uppercase">Volume de Transf.</div>
+                <div class="fs-3 fw-bold text-dark mt-1">R$ {{ "%.2f"|format(m.total_transferencia|default(0)) }}</div>
+                <div class="small text-muted mt-1"><i class="fas fa-exchange-alt text-warning"></i> {{ m.qtd_transferencia }} operações</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 card-hover bg-dark text-white border-start border-secondary border-4">
+                <div class="text-light small fw-bold text-uppercase">Movimentação Total</div>
+                <div class="fs-3 fw-bold mt-1 text-warning">R$ {{ "%.2f"|format(m.total_global|default(0)) }}</div>
+                <div class="small text-light text-opacity-75 mt-1"><i class="fas fa-calculator"></i> Total: {{ m.qtd_total }} transações</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 card-hover">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h5 class="fw-bold text-dark"><i class="fas fa-bar-chart text-primary me-2"></i> Fluxo de Capital (R$)</h5>
+                </div>
+                <div class="card-body p-4">
+                    <canvas id="graficoVolumes" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 card-hover">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h5 class="fw-bold text-dark"><i class="fas fa-chart-pie text-primary me-2"></i> Mix de Operações</h5>
+                </div>
+                <div class="card-body p-4 d-flex align-items-center justify-content-center">
+                    <canvas id="graficoQuantidades" style="max-height: 250px; max-width: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Configuração do Gráfico de Barras (Volumes)
+    const ctxVolumes = document.getElementById('graficoVolumes').getContext('2d');
+    new Chart(ctxVolumes, {
+        type: 'bar',
+        data: {
+            labels: ['Depósitos', 'Saques', 'Transferências'],
+            datasets: [{
+                label: 'Total Movimentado (R$)',
+                data: [
+                    Number('{{ m.total_deposito|default(0) }}'), 
+                    Number('{{ m.total_saque|default(0) }}'), 
+                    Number('{{ m.total_transferencia|default(0) }}')
+                ],
+                backgroundColor: ['#198754', '#dc3545', '#ffc107'],
+                borderRadius: 8,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // Configuração do Gráfico de Rosca (Quantidades)
+    // Configuração do Gráfico de Rosca (Quantidades)
+    const canvasQuantidades = document.getElementById('graficoQuantidades');
+    
+    if (canvasQuantidades) {
+        const ctxQuantidades = canvasQuantidades.getContext('2d');
+        new Chart(ctxQuantidades, {
+            type: 'doughnut',
+            data: {
+                labels: ['Depósitos', 'Saques', 'Transferências'],
+                datasets: [{
+                    data: [
+                        Number('{{ m.qtd_deposito|default(0) }}'), 
+                        Number('{{ m.qtd_saque|default(0) }}'), 
+                        Number('{{ m.qtd_transferencia|default(0) }}')
+                    ],
+                    backgroundColor: ['#198754', '#dc3545', '#ffc107'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }
+</script>
+{% endblock %}

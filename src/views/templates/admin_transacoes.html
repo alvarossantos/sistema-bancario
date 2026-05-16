@@ -1,41 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold"><i class="fas fa-clipboard-list text-warning me-2"></i> Relatório Global de Transações</h2>
-</div>
+<div class="slide-up">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark"><i class="fas fa-server text-warning me-2"></i> Monitoramento Global</h2>
+        <div class="badge bg-dark fs-6 rounded-pill shadow-sm py-2 px-4 mt-3 mt-md-0">
+            {{ transacoes|length }} Operações Registadas
+        </div>
+    </div>
 
-<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-    <div class="table-responsive">
-        <table class="table table-striped align-middle mb-0">
-            <thead class="table-dark">
-                <tr>
-                    <th class="ps-4">ID Transação</th>
-                    <th>ID Conta (UUID)</th>
-                    <th>Tipo de Operação</th>
-                    <th>Valor</th>
-                    <th>Data/Hora</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for t in transacoes %}
-                <tr>
-                    <td class="ps-4 text-muted small">{{ t[0] }}</td>
-                    <td><span class="badge bg-light text-dark border">{{ t[1] }}</span></td>
-                    <td>
-                        {% if t[2] == 'DEPOSITO' %}
-                            <span class="badge bg-success"><i class="fas fa-arrow-down me-1"></i> Depósito</span>
-                        {% elif t[2] == 'LEVANTAMENTO' %}
-                            <span class="badge bg-danger"><i class="fas fa-arrow-up me-1"></i> Levantamento</span>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden card-hover">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="py-3 ps-4 text-start">Data/Hora</th>
+                            <th class="py-3">Tipo da Operação</th>
+                            <th class="py-3">Conta Origem</th>
+                            <th class="py-3">Conta Destino</th>
+                            <th class="py-3 text-end pe-4">Valor Movimentado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transacoes|reverse %}
+                        <tr>
+                            <td class="text-start ps-4 text-muted small">
+                                {{ t[6].strftime('%d/%m/%Y às %H:%M') if t[6] else 'N/A' }}
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border text-uppercase px-2 py-1">
+                                    {{ t[3] }}
+                                </span>
+                            </td>
+                            <td class="font-monospace text-muted small" title="{{ t[1] }}">
+                                {{ t[1]|string|truncate(8, True, '...') if t[1] else '---' }}
+                            </td>
+                            <td class="font-monospace text-muted small" title="{{ t[2] }}">
+                                {{ t[2]|string|truncate(8, True, '...') if t[2] else '---' }}
+                            </td>
+                            <td class="text-end pe-4 fw-bold text-dark">
+                                R$ {{ "%.2f"|format(t[5]) }}
+                            </td>
+                        </tr>
                         {% else %}
-                            <span class="badge bg-info text-dark"><i class="fas fa-exchange-alt me-1"></i> {{ t[2] }}</span>
-                        {% endif %}
-                    </td>
-                    <td class="fw-bold">R$ {{ "%.2f"|format(t[3]) }}</td>
-                    <td>{{ t[4] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        <tr>
+                            <td colspan="5" class="py-5 text-muted">
+                                <i class="fas fa-exchange-alt fa-3x mb-3 text-light"></i><br>
+                                Nenhuma transação registada no sistema.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

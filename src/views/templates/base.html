@@ -57,6 +57,7 @@
                 <span class="navbar-text me-3 text-white">Olá, {{ session.nome }}</span>
                 
                 {% if session.papel == 'admin' %}
+                    <a class="nav-link text-warning fw-bold" href="/admin/dashboard"><i class="fas fa-chart-line me-1"></i> Dashboard</a>
                     <a class="nav-link text-warning fw-bold" href="/admin/clientes"><i class="fas fa-users me-1"></i> Clientes</a>
                     <a class="nav-link text-warning fw-bold" href="/admin/transacoes"><i class="fas fa-exchange-alt me-1"></i> Transações Gerais</a>
                 {% else %}
@@ -66,6 +67,7 @@
                 {% endif %}
                 
                 <a class="nav-link text-danger fw-bold ms-2" href="/logout"><i class="fas fa-sign-out-alt me-1"></i> Sair</a>
+                
             {% else %}
                 <a class="nav-link" href="/login">Entrar</a>
                 <a class="nav-link btn btn-primary text-white ms-2 px-3 fw-bold rounded-pill shadow-sm" href="/cadastro">Abrir Conta</a>

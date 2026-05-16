@@ -225,3 +225,44 @@ class ContaController:
             "data_hora": transacao_dados[4].strftime("%d/%m/%Y às %H:%M:%S") if transacao_dados[4] else 'N/A',
             "autenticacao": f"NEX{id_str}-BR"
         }
+
+    def obter_metricas_admin(self):
+        """
+        Consolida todas as transações do banco para gerar as métricas do Dashboard
+        """
+        transacoes = self.transacao_repo.listar_todos()
+        
+        total_deposito = 0.0
+        total_saque = 0.0
+        total_transferencia = 0.0
+        
+        qtd_deposito = 0
+        qtd_saque = 0
+        qtd_transferencia = 0
+        
+        for t in transacoes:
+            # t[3] é o tipo (deposito, saque, transferencia)
+            # t[5] é o valor
+            tipo = t[3]
+            valor = float(t[5])
+            
+            if tipo == 'deposito':
+                total_deposito += valor
+                qtd_deposito += 1
+            elif tipo == 'saque':
+                total_saque += valor
+                qtd_saque += 1
+            elif tipo == 'transferencia':
+                total_transferencia += valor
+                qtd_transferencia += 1
+        
+        return {
+            "total_deposito": total_deposito,
+            "total_saque": total_saque,
+            "total_transferencia": total_transferencia,
+            "total_global": total_deposito + total_saque + total_transferencia,
+            "qtd_deposito": qtd_deposito,
+            "qtd_saque": qtd_saque,
+            "qtd_transferencia": qtd_transferencia,
+            "qtd_global": qtd_deposito + qtd_saque + qtd_transferencia
+        }
