@@ -1,4 +1,4 @@
-from src.model.transacoes import TransacoesModel
+from src.models.transacoes import TransacoesModel
 from src.database.conexao import BancoDeDados
 
 

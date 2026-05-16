@@ -27,6 +27,7 @@ CREATE TABLE usuarios (
     data_nascimento DATE NOT NULL,
     email VARCHAR(255) UNIQUE,
     senha_hash TEXT NOT NULL,
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE,
     ativo BOOLEAN NOT NULL DEFAULT TRUE,
     deletado_em TIMESTAMP, -- Soft Delete
     criado_em TIMESTAMP NOT NULL DEFAULT NOW(),

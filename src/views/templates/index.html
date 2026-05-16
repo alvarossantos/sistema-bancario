@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-lg-6">
+        <h1 class="display-3 fw-bold mb-4">O banco digital da <span class="text-primary">nova geração.</span></h1>
+        <p class="lead text-muted mb-5">
+            No NexBank, simplificamos a sua vida financeira com tecnologia de ponta, 
+            segurança robusta e taxas zero. Abra a sua conta em minutos e tome o controlo do seu dinheiro.
+        </p>
+        <div class="d-grid gap-3 d-md-flex">
+            <a href="/cadastro" class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow">Abrir Minha Conta</a>
+            <a href="/login" class="btn btn-outline-dark btn-lg px-5 py-3 fw-bold rounded-pill">Aceder à Área do Cliente</a>
+        </div>
+    </div>
+    <div class="col-lg-6 text-center d-none d-lg-block">
+        <i class="fas fa-university fa-10x text-dark opacity-25"></i>
+    </div>
+</div>
+
+<div class="row mt-5 g-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 p-3 rounded-4">
+            <div class="card-body">
+                <div class="feature-icon bg-primary bg-gradient text-white mb-3 d-inline-flex align-items-center justify-content-center rounded-3 p-3">
+                    <i class="fas fa-shield-alt fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">Segurança Máxima</h4>
+                <p class="text-muted">Utilizamos criptografia de última geração e autenticação multi-fator para proteger cada cêntimo seu.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 p-3 rounded-4">
+            <div class="card-body">
+                <div class="feature-icon bg-success bg-gradient text-white mb-3 d-inline-flex align-items-center justify-content-center rounded-3 p-3">
+                    <i class="fab fa-pix fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">Transferências Instantâneas</h4>
+                <p class="text-muted">Pix gratuito e TEDs rápidas para qualquer banco. O seu dinheiro movimenta-se à velocidade da luz.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 p-3 rounded-4">
+            <div class="card-body">
+                <div class="feature-icon bg-warning bg-gradient text-dark mb-3 d-inline-flex align-items-center justify-content-center rounded-3 p-3">
+                    <i class="fas fa-headset fa-2x"></i>
+                </div>
+                <h4 class="fw-bold">Suporte 24/7</h4>
+                <p class="text-muted">A nossa equipa de especialistas está sempre disponível para o ajudar, a qualquer hora do dia ou da noite.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 pt-5 border-top">
+    <div class="col-12 text-center">
+        <p class="text-muted small">© 2026 NexBank - Desenvolvido para o Trabalho Prático de Engenharia de Software II (UEMG).</p>
+    </div>
+</div>
+{% endblock %}

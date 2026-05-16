@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="fas fa-users-cog text-warning me-2"></i> Gestão de Clientes</h2>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th class="ps-4">Nome Completo</th>
+                    <th>E-mail</th>
+                    <th>CPF</th>
+                    <th>Data Registo</th>
+                    <th>Permissão</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in clientes %}
+                <tr>
+                    <td class="ps-4 fw-bold">{{ c[1] }}</td>
+                    <td>{{ c[4] }}</td>
+                    <td>{{ c[2] }}</td>
+                    <td>{{ c[9] }}</td> <td>
+                        {% if c[6] %}
+                            <span class="badge bg-danger rounded-pill px-3">Administrador</span>
+                        {% else %}
+                            <span class="badge bg-primary rounded-pill px-3">Cliente</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

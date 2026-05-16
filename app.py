@@ -1,17 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from src.controllers.conta_controller import ContaController, TransferenciaPix, TransferenciaTED
 from src.repository.usuario import UsuarioRepository
+from src.controllers.usuario_controller import UsuarioController
 from src.repository.conta import ContaRepository
 from src.repository.transacoes import TransacoesRepository
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='src/views/templates')
 app.secret_key = 'chave_secreta'
 
 usuario_repo = UsuarioRepository()
+usuario_controller = UsuarioController()
 conta_repo = ContaRepository()
-transacao_repo = TransacoesRepository()
 conta_controller = ContaController()
+transacao_repo = TransacoesRepository()
 
 def logado():
     return 'usuario_id' in session
@@ -20,24 +22,69 @@ def e_admin():
     return session.get('papel') == 'admin'
 
 @app.route('/')
+def index():
+    if 'usuario_id' in session:
+        return redirect(url_for('dashboard'))
+    return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
         senha = request.form.get('senha')
-        usuario = usuario_repo.buscar_por_email(email)
         
-        if usuario and usuario.senha_hash == senha:
-            session['usuario_id'] = usuario.id
-            session['nome'] = usuario.nome
-            session['papel'] = usuario.papel
+        usuario = usuario_controller.autenticar_usuario(email, senha)
+        
+        if usuario:
+            session['usuario_id'] = str(usuario[0])
+            session['nome'] = usuario[1]
+            session['papel'] = 'admin' if usuario[6] == True else 'user'
+            
+            flash("Login realizado com sucesso!", "success")
             return redirect(url_for('dashboard'))
-        flash("E-mail ou senha incorretos.")
+        
+        flash("E-mail ou senha incorretos.", "danger")
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
-        pass
+        nome = request.form.get('nome')
+        cpf = request.form.get('cpf')
+        data_nascimento = request.form.get('data_nascimento')
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+        
+        tipo_pessoa = request.form.get('tipo_pessoa')
+        tipo_conta = request.form.get('tipo_conta')
+
+        try:
+            usuario_id = usuario_controller.registrar_usuario(
+                nome, 
+                cpf, 
+                data_nascimento, 
+                email, 
+                senha,
+                tipo_pessoa
+                )
+            
+            conta_controller.criar_conta_automatica(usuario_id, tipo_pessoa, tipo_conta)
+            
+            flash("Cadastro realizado com sucesso! Bem-vindo ao NexBank. Faça login para acessar sua conta.", "success")
+            return redirect(url_for('login'))
+        
+        except ValueError as e:
+            flash(str(e), "danger")
+        
+        except Exception as e:
+            flash("Erro ao criar conta. Verifique se este E-mail ou CPF já estão cadastrados.", "danger")
+            print(f"Erro BD: {e}")
+
     return render_template('cadastro.html')
 
 @app.route('/dashboard')
@@ -51,7 +98,9 @@ def dashboard():
 def perfil():
     if not logado():
         return redirect(url_for('login'))
-    usuario = conta_repo.buscar_por_usuario(session['usuario_id'])
+    
+    usuario = usuario_repo.buscar_por_id(session['usuario_id'])
+    
     if request.method == 'POST':
         flash("Perfil atualizado!", "success")
     return render_template('perfil.html', usuario=usuario)

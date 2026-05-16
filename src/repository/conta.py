@@ -1,5 +1,5 @@
-from src.model.conta import ContaModel
-from src.model.usuario import UsuarioModel
+from src.models.conta import ContaModel
+from src.models.usuario import UsuarioModel
 from src.database.conexao import BancoDeDados
 
 
@@ -17,7 +17,7 @@ class ContaRepository:
             conta.tipo,
             conta.saldo,
             conta.limite_emprestimo,
-            conta.ativa,
+            conta.ativa
         )
         
         with BancoDeDados() as cursor:

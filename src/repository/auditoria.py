@@ -1,4 +1,4 @@
-from src.model.auditoria import AuditoriaModel
+from src.models.auditoria import AuditoriaModel
 from src.database.conexao import BancoDeDados
 
 

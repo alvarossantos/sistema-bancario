@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from src.repository.conta import ContaRepository
+from src.models.conta import ContaModel
 from src.repository.transacoes import TransacoesRepository
 from src.models.transacoes import TransacoesModel
+import random
 
 
 class EstrategiaTransferencia(ABC):
@@ -21,6 +23,32 @@ class ContaController:
     def __init__(self):
         self.conta_repo = ContaRepository()
         self.transacao_repo = TransacoesRepository()
+        
+    def criar_conta_automatica(self, usuario_id, tipo_pessoa, tipo_conta):
+        """Gera automaticamente os dados bancários e persiste a conta."""
+        agencias_existentes = ["0001", "0002", "0345", "1010"]
+        agencia = random.choice(agencias_existentes)
+
+        numero_conta = str(random.randint(10000, 99999))
+        
+        if tipo_conta == 'corrente':
+            # Se for corrente e PJ, limite é 2000. Se for corrente e PF, é 200
+            limite = 2000.0 if tipo_pessoa == 'PJ' else 200.0
+        else:
+            # Se for poupança, o limite é 0
+            limite = 0.0
+        
+        nova_conta = ContaModel(
+            usuario_id=usuario_id,
+            numero_conta=numero_conta,
+            agencia=agencia,
+            tipo=tipo_conta,
+            saldo=0.0,
+            limite_emprestimo=limite,
+            ativa=True
+        )
+        
+        return self.conta_repo.criar(nova_conta)
     
     def depositar(self, conta_id: id, valor: float):
         """Executa um depósito aumentando o saldo e registrando a transação."""

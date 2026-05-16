@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0 rounded-4 mt-3">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
+                    <h3 class="fw-bold">Abra a sua Conta</h3>
+                    <p class="text-muted">Rápido, fácil e 100% digital.</p>
+                </div>
+                
+                <form action="/cadastro" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nome Completo</label>
+                        <input type="text" name="nome" class="form-control bg-light" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">CPF</label>
+                            <input type="text" name="cpf" class="form-control bg-light" maxlength="11" placeholder="Somente números" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Data de Nascimento</label>
+                            <input type="date" name="data_nascimento" class="form-control bg-light" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">E-mail</label>
+                        <input type="email" name="email" class="form-control bg-light" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Criar Palavra-passe</label>
+                        <input type="password" name="senha" class="form-control bg-light" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Você é Pessoa Física ou Jurídica?</label>
+                        <div class="d-flex gap-4 p-3 bg-light rounded-3 border">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo_pessoa" value="PF" checked>
+                                <label class="form-check-label">Pessoa Física (PF)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo_pessoa" value="PJ">
+                                <label class="form-check-label">Pessoa Jurídica (PJ)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Qual o tipo de conta deseja abrir?</label>
+                        <div class="d-flex gap-4 p-3 bg-light rounded-3 border">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo_conta" value="corrente" checked>
+                                <label class="form-check-label">Conta Corrente</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo_conta" value="poupanca">
+                                <label class="form-check-label">Conta Poupança</label>
+                            </div>
+                        </div>
+                        <small class="text-muted">A agência e o número da conta serão gerados automaticamente.</small>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg w-100 fw-bold rounded-pill">Finalizar Registo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
