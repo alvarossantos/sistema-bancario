@@ -173,4 +173,55 @@ class ContaController:
         
         self.transacao_repo.criar(nova_transacao)
         
-        return f"Transferência realizada com sucesso via {metodo_envio}! Taxa aplicada: R$ {taxa:.2f}"
+        dados_comprovante = {
+            "metodo": metodo_envio,
+            "valor": valor,
+            "taxa": taxa,
+            "total_debitado": custo_total,
+            "destino": identificador_destino,
+            "data_hora": datetime.now().strftime("%d/%m/%Y às %H:%M:%S"),
+            "autenticacao": f"NEX{random.randint(10000000, 99999999)}BR"
+        }
+        
+        return dados_comprovante
+    
+    def gerar_comprovante_por_id(self, transacao_id, usuario_id):
+        """
+        Busca uma transação específica e formata os dados para o comprovante,
+        garantindo que a transação pertence à conta do usuário.
+        """
+        conta_usuario = self.conta_repo.buscar_por_usuario(usuario_id)
+        if not conta_usuario:
+            return None
+        conta_logada_id = conta_usuario[0]
+        
+        transacao_dados = self.transacao_repo.buscar_detalhes_comprovante(transacao_id, conta_logada_id)
+        if not transacao_dados:
+            return None
+        
+        # transacao_dados: [0]=id, [1]=tipo, [2]=status, [3]=valor, [4]=realizado_em
+        # [5]=conta_origem_id, [6]=conta_destino_id, [7]=nome_destino, [8]=nome_origem
+        valor = float(transacao_dados[3])
+        tipo_transacao = transacao_dados[1]
+        
+        if tipo_transacao == 'transferencia':
+            destino = f"{transacao_dados[7]} (Conta: {transacao_dados[6]})" if transacao_dados[7] else f"Conta: {transacao_dados[6]}"
+            metodo = "Transferência Eletrônica"
+        elif tipo_transacao == 'deposito':
+            destino = f"Própria Conta (Conta: {transacao_dados[5]})"
+            metodo = "Depósito em Caixa"
+        else:
+            destino = "Retirada de Recursos"
+            metodo = "Saque Automático"
+        
+        id_str = str(transacao_dados[0]).replace('-', '').upper()[:8]
+        
+        return {
+            "metodo": metodo,
+            "valor": valor,
+            "taxa": 0.0,
+            "total_debitado": valor,
+            "destino": destino,
+            "data_hora": transacao_dados[4].strftime("%d/%m/%Y às %H:%M:%S") if transacao_dados[4] else 'N/A',
+            "autenticacao": f"NEX{id_str}-BR"
+        }

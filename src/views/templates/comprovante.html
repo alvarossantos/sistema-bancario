@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    /* Estilo do talão (parecido com papel térmico) */
+    .receipt-card {
+        background-color: #fff;
+        border-top: 8px solid #0d6efd; /* Azul do tema primário */
+        border-bottom: 8px solid #0d6efd;
+    }
+    .dashed-line {
+        border-top: 2px dashed #dee2e6;
+        margin: 20px 0;
+    }
+    
+    /* Regras mágicas para a impressora ou salvar em PDF */
+    @media print {
+        body { background-color: #fff; }
+        .navbar, .btn, .no-print { display: none !important; }
+        .receipt-card { box-shadow: none !important; border: 1px solid #000; }
+        .container { width: 100%; max-width: 100%; margin: 0; padding: 0; }
+    }
+</style>
+
+<div class="row justify-content-center slide-up">
+    <div class="col-md-6 col-lg-5">
+        
+        <div class="text-center mb-4 no-print">
+            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+            <h3 class="fw-bold mt-2 text-success">Transferência Concluída!</h3>
+            <p class="text-muted">O seu dinheiro já foi enviado.</p>
+        </div>
+
+        <div class="card receipt-card shadow-lg border-0 rounded-0 p-4 mb-4">
+            <div class="text-center mb-4">
+                <h4 class="fw-bold text-dark"><i class="fas fa-university text-primary me-2"></i>NexBank</h4>
+                <p class="text-muted mb-0 small">Comprovante de Transferência</p>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Data da Operação:</span>
+                <span class="fw-bold">{{ c.data_hora }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Método:</span>
+                <span class="fw-bold">{{ c.metodo }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Destino (Chave/Conta):</span>
+                <span class="fw-bold">{{ c.destino }}</span>
+            </div>
+
+            <div class="dashed-line"></div>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Valor Transferido:</span>
+                <span class="fw-bold">R$ {{ "%.2f"|format(c.valor) }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 text-danger">
+                <span class="">Taxa da Operação ({{ c.metodo }}):</span>
+                <span class="fw-bold">R$ {{ "%.2f"|format(c.taxa) }}</span>
+            </div>
+            
+            <div class="dashed-line"></div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="text-muted fs-5">Total Debitado:</span>
+                <span class="fw-bold fs-4 text-dark">R$ {{ "%.2f"|format(c.total_debitado) }}</span>
+            </div>
+
+            <div class="bg-light p-3 rounded text-center small text-muted font-monospace">
+                Autenticação Eletrônica:<br>
+                <strong class="text-dark">{{ c.autenticacao }}</strong>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center no-print">
+            <button onclick="window.print()" class="btn btn-outline-secondary fw-bold px-4 rounded-pill">
+                <i class="fas fa-print me-1"></i> Imprimir / PDF
+            </button>
+            <a href="/dashboard" class="btn btn-primary fw-bold px-4 rounded-pill shadow-sm">
+                Voltar ao Início
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

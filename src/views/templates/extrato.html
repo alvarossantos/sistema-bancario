@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="slide-up">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark"><i class="fas fa-file-invoice-dollar text-primary me-2"></i> Extrato da Conta</h2>
+        <div class="badge bg-primary fs-5 rounded-pill shadow-sm py-2 px-4 mt-3 mt-md-0">
+            Saldo Atual: R$ {{ "%.2f"|format(conta[5]) }}
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden card-hover">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="py-3 text-start ps-4">Data e Hora</th>
+                            <th class="py-3">Operação</th>
+                            <th class="py-3">Status</th>
+                            <th class="py-3 text-end">Valor (R$)</th>
+                            <th class="py-3 text-center pe-4 no-print">Ação</th> </tr>
+                    </thead>
+                    <tbody>
+                        {% if transacoes %}
+                            {% for t in transacoes|reverse %}
+                            
+                                {% set is_entrada = false %}
+                                {% if t[3] == 'deposito' %}
+                                    {% set is_entrada = true %}
+                                {% elif t[3] == 'transferencia' and t[2] == conta[0] %}
+                                    {% set is_entrada = true %}
+                                {% endif %}
+
+                                <tr>
+                                    <td class="text-start ps-4 text-muted small">
+                                        {{ t[7].strftime('%d/%m/%Y às %H:%M') if t[7] else 'N/A' }}
+                                    </td>
+                                    <td>
+                                        {% if t[3] == 'deposito' %}
+                                            <span class="badge bg-light text-dark border"><i class="fas fa-arrow-down text-success me-1"></i> Depósito</span>
+                                        {% elif t[3] == 'saque' %}
+                                            <span class="badge bg-light text-dark border"><i class="fas fa-arrow-up text-danger me-1"></i> Levantamento</span>
+                                        {% elif t[3] == 'transferencia' %}
+                                            {% if is_entrada %}
+                                                <span class="badge bg-light text-dark border"><i class="fas fa-exchange-alt text-success me-1"></i> Transf. Recebida</span>
+                                            {% else %}
+                                                <span class="badge bg-light text-dark border"><i class="fas fa-exchange-alt text-danger me-1"></i> Transf. Enviada</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if t[4] == 'concluido' %}
+                                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Concluído</span>
+                                        {% else %}
+                                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">{{ t[4]|capitalize }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end fw-bold {% if is_entrada %}text-success{% else %}text-danger{% endif %}">
+                                        {% if is_entrada %}+{% else %}-{% endif %} R$ {{ "%.2f"|format(t[5]) }}
+                                    </td>
+                                    <td class="text-center pe-4 no-print">
+                                        <a href="/comprovante/{{ t[0] }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
+                                            <i class="fas fa-receipt me-1"></i> Ver
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="py-5 text-muted">
+                                    <i class="fas fa-box-open fa-3x mb-3 text-light"></i><br>
+                                    Ainda não possui transações nesta conta.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

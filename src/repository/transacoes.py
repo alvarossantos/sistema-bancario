@@ -6,7 +6,7 @@ class TransacoesRepository:
     def criar(self, transacao: TransacoesModel):
         sql = """
         INSERT INTO transacoes (conta_origem_id, conta_destino_id, tipo, status, valor, realizado_em)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s::tipo_transacao, %s::status_transacao, %s, %s)
         RETURNING id;
         """
         params = (
@@ -51,3 +51,26 @@ class TransacoesRepository:
         with BancoDeDados() as cursor:
             cursor.execute(sql)
             return cursor.fetchall()
+
+    def buscar_detalhes_comprovante(self, transacao_id, conta_logada_id):
+        """
+        Executa a query no banco de dados para buscar os detalhes da transação.
+        Retorna a tupla com os dados ou None se não encontrar.
+        """
+        sql = """
+        SELECT t.id, t.tipo, t.status, t.valor, t.realizado_em,
+               co.numero_conta as conta_origem,
+               cd.numero_conta as conta_destino,
+               ud.nome as nome_destino,
+               uo.nome as nome_origem
+        FROM transacoes t
+        LEFT JOIN contas co ON t.conta_origem_id = co.id
+        LEFT JOIN usuarios uo ON co.usuario_id = uo.id
+        LEFT JOIN contas cd ON t.conta_destino_id = cd.id
+        LEFT JOIN usuarios ud ON cd.usuario_id = ud.id
+        WHERE t.id = %s AND (t.conta_origem_id = %s OR t.conta_destino_id = %s);
+        """
+        
+        with BancoDeDados() as cursor:
+            cursor.execute(sql, (transacao_id, conta_logada_id, conta_logada_id))
+            return cursor.fetchone()

@@ -94,6 +94,36 @@ def dashboard():
     conta = conta_repo.buscar_por_usuario(session['usuario_id'])
     return render_template('user_dashboard.html', conta=conta)
 
+@app.route('/extrato')
+def extrato():
+    if not logado():
+        return redirect(url_for('login'))
+    
+    conta = conta_repo.buscar_por_usuario(session['usuario_id'])
+    
+    if not conta:
+        flash("Conta bancária não encontrada.", "danger")
+        return redirect(url_for('dashboard'))
+
+    transacoes = transacao_repo.buscar_por_conta(conta[0])
+    return render_template('extrato.html', conta=conta, transacoes=transacoes)
+
+@app.route('/comprovante/<transacao_id>')
+def visualizar_comprovante_historico(transacao_id):
+    print(f"Buscando o comprovante número: {transacao_id}")
+    if not logado():
+        return redirect(url_for('login'))
+    
+    usuario_id = session['usuario_id']
+
+    comprovante = conta_controller.gerar_comprovante_por_id(transacao_id, usuario_id)
+    
+    if not comprovante:
+        flash("Transação não encontrada ou acesso não autorizado.", "danger")
+        return redirect(url_for('extrato'))
+    
+    return render_template('comprovante.html', c=comprovante)
+
 @app.route('/operacoes', methods=['POST'])
 def operacoes():
     if not logado():
@@ -128,13 +158,10 @@ def transferir():
     metodo = request.form.get('metodo')
     valor = request.form.get('valor')
 
-    print(f"--- DEBUG TRANSFERÊNCIA ---")
-    print(f"Destino: {identificador_destino} | Método: {metodo} | Valor: {valor}")
-    print(f"---------------------------")
-
     try:
-        mensagem = conta_controller.transferir(id_origem, identificador_destino, valor, metodo)
-        flash(mensagem, "success")
+        comprovante = conta_controller.transferir(id_origem, identificador_destino, valor, metodo)
+        return render_template('comprovante.html', c=comprovante)
+    
     except Exception as e:
         flash(str(e), "danger")
     
