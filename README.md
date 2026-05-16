@@ -164,7 +164,6 @@ UPDATE usuarios SET is_admin = true WHERE email = 'admin@nexbank.com';
 
 *Desenvolvido com ☕ e Python.*
 
-```
 
 ### O que mudou:
 1. **Design mais Premium:** Adicionei *badges* coloridas no topo e emojis nos títulos para tornar a leitura mais dinâmica e atrativa.
@@ -172,5 +171,3 @@ UPDATE usuarios SET is_admin = true WHERE email = 'admin@nexbank.com';
 3. **Engenharia:** Deixei muito explícito o uso do **Strategy Pattern**, dos UUIDs, do hashing e da arquitetura MVC limpa. Isto é excelente para quem estiver a avaliar o código.
 4. **Instruções de Instalação:** Agora menciona a utilização correta do ficheiro `.env` para segurança das *passwords* do banco e atualiza a instrução para o `pip install -r requirements.txt` real.
 5. **Configuração de Admin:** Inclui o passo final de como atribuir poderes de administrador via comando SQL, algo que vai poupar tempo a quem quiser testar o projeto a 100%.
-
-```
