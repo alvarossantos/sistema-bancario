@@ -4,6 +4,7 @@ from src.models.conta import ContaModel
 from src.repository.transacoes import TransacoesRepository
 from src.models.transacoes import TransacoesModel
 import random
+from datetime import datetime
 
 
 class EstrategiaTransferencia(ABC):
@@ -50,62 +51,126 @@ class ContaController:
         
         return self.conta_repo.criar(nova_conta)
     
-    def depositar(self, conta_id: id, valor: float):
-        """Executa um depósito aumentando o saldo e registrando a transação."""
-        conta = self.conta_repo.buscar_por_id(conta_id)
-        if not conta:
-            raise Exception("Conta não encontrada.")
-        
-        conta.saldo += valor
-        self.conta_repo.editar(conta)
-        
-        nova_transacao = TransacoesModel(conta_id, "DEPOSITO", valor)
-        self.transacao_repo.criar(nova_transacao)
-        return True
-    
-    def sacar(self, conta_id: int, valor: float):
-        """Executa um levantamento validandno se existe saldo suficiente e registrando a transação."""
-        conta = self.conta_repo.buscar_por_id(conta_id)
-        if not conta:
+    # Simular depósito
+    def efetuar_deposito(self, usuario_id, valor_str):
+        """Valida o valor recebido, atualiza o saldo da conta e registra a transação."""
+        try:
+            valor = float(valor_str)        
+            if valor <= 0:
+                raise ValueError("O valor do depósito deve ser maior que zero.")
+        except ValueError:
+            raise ValueError("O valor de depósito inválido. Insira um número válido.")
+            
+        conta_db = self.conta_repo.buscar_por_usuario(usuario_id)
+        if not conta_db:
             raise ValueError("Conta não encontrada.")
         
-        if conta.saldo < valor:
-            raise ValueError("Saldo insuficiente para esta operação.")
-
-        conta.saldo -= valor
-        self.conta_repo.editar(conta)
+        # Recostruir o objeto (tupla da conta)
+        # 0:id, 1:usuario_id, 2:numero_conta, 3:agencia, 4:tipo, 5:saldo, 6:limite, 7:ativa
+        saldo_atual = float(conta_db[5])
+        novo_saldo = saldo_atual + valor
         
-        nova_transacao = TransacoesModel(conta_id, "LEVANTAMENTO", valor)
+        # Atualizar o saldo na tabela 'contas'
+        self.conta_repo.atualizar_saldo(conta_db[0], novo_saldo)
+        
+        nova_transacao = TransacoesModel(
+            conta_destino_id=conta_db[0],
+            tipo="deposito",
+            status="concluido",
+            valor=valor,
+            realizado_em=datetime.now()
+        )
+        self.transacao_repo.criar(nova_transacao)
+        
+        return novo_saldo
+    
+    def efetuar_saque(self, usuario_id, valor_str):
+        """Executa um levantamento validandno se existe saldo suficiente e registrando a transação."""
+        try:
+            valor = float(valor_str)
+            if valor <= 0:
+                raise ValueError("O valor do saque deve ser maior que zero.")
+        except ValueError:
+            raise ValueError("O valor de saque inválido. Insira um número válido.")
+        
+        conta_db = self.conta_repo.buscar_por_usuario(usuario_id)
+        if not conta_db:
+            raise ValueError("Conta não encontrada.")
+        
+        conta_id = conta_db[0]
+        saldo_atual = float(conta_db[5])
+        
+        if saldo_atual < valor:
+            raise ValueError("Saldo insuficiente para realizar este saque.")
+
+        novo_saldo = saldo_atual - valor
+        self.conta_repo.atualizar_saldo(conta_id, novo_saldo)
+        
+        nova_transacao = TransacoesModel(
+            conta_origem_id=conta_id, 
+            conta_destino_id=None,
+            tipo="saque",
+            status="concluido", 
+            valor=valor, 
+            realizado_em=datetime.now()
+        )
         self.transacao_repo.criar(nova_transacao)
         return True
     
-    def transferir(self, id_origem: int, id_destino: int, valor: float, estrategia: EstrategiaTransferencia):
+    def transferir(self, id_origem, identificador_destino, valor_str, metodo_envio):
         """
         Orquestra uma transferência entre contas aplicando a Estrategia de taxas.
-        """        
-        conta_origem = self.conta_repo.buscar_por_id(id_origem)
-        conta_destino = self.conta_repo.buscar_por_id(id_destino)
+        """
+        try:
+            valor = float(valor_str)
+            if valor <= 0:
+                raise ValueError("O valor da transferência deve ser maior que zero.")
+        except ValueError:
+            raise ValueError("O valor de transferência inválido. Insira um número válido.")
         
-        if not conta_origem or not conta_destino:
-            raise ValueError("Uma ou ambas as contas não foram encontradas.")
+        conta_origem = self.conta_repo.buscar_por_id(id_origem)
+        if not conta_origem:
+            raise ValueError("A sua conta de origem não foi encontrada.")
+        
+        if metodo_envio == "PIX":
+            estrategia = TransferenciaPix()
+            cpf_limpo = identificador_destino.strip() if identificador_destino else ""
+            conta_destino = self.conta_repo.buscar_por_cpf(cpf_limpo)
+            if not conta_destino:
+                raise ValueError("A conta de destino não foi encontrada.")
+        
+        elif metodo_envio == "TED":
+            estrategia = TransferenciaTED()
+            numero_limpo = identificador_destino.strip() if identificador_destino else ""
+            conta_destino = self.conta_repo.buscar_por_numero(numero_limpo)
+            if not conta_destino:
+                raise ValueError("A conta de destino não foi encontrada.")
+            
+        else:
+            raise ValueError("Método de envio não suportado.")
         
         taxa = estrategia.calcular_taxa(valor)
         custo_total = valor + taxa
         
-        if conta_origem.saldo < custo_total:
-            raise ValueError("Saldo insuficiente para esta operação.")
+        saldo_origem = float(conta_origem[5])
+        if saldo_origem < custo_total:
+            raise ValueError(f"Saldo insuficiente. Custo total com taxa: R$ {custo_total:.2f}")
         
-        conta_origem.saldo -= custo_total
-        self.conta_repo.editar(conta_origem)
+        novo_saldo_origem = saldo_origem - custo_total
+        self.conta_repo.atualizar_saldo(conta_origem[0], novo_saldo_origem)
         
-        conta_destino.saldo += valor
-        self.conta_repo.editar(conta_destino)
+        novo_saldo_destino = float(conta_destino[5]) + valor
+        self.conta_repo.atualizar_saldo(conta_destino[0], novo_saldo_destino)
         
-        t_debito = TransacoesModel(id_origem, "TRANSFERENCIA_SAIDA", valor)
-        t_credito = TransacoesModel(id_destino, "TRANSFERENCIA_ENTRADA", valor)
+        nova_transacao = TransacoesModel(
+            conta_origem_id=conta_origem[0],
+            conta_destino_id=conta_destino[0],
+            tipo="transferencia",
+            status="concluido",
+            valor=valor,
+            realizado_em=datetime.now()
+        )
         
-        self.transacao_repo.criar(t_debito)
-        self.transacao_repo.criar(t_credito)
+        self.transacao_repo.criar(nova_transacao)
         
-        return f"Transferência realizada! Taxa aplicada: R$ {taxa:.2f}"
-    
+        return f"Transferência realizada com sucesso via {metodo_envio}! Taxa aplicada: R$ {taxa:.2f}"

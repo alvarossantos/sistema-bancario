@@ -94,6 +94,52 @@ def dashboard():
     conta = conta_repo.buscar_por_usuario(session['usuario_id'])
     return render_template('user_dashboard.html', conta=conta)
 
+@app.route('/operacoes', methods=['POST'])
+def operacoes():
+    if not logado():
+        return redirect(url_for('login'))
+
+    tipo = request.form.get('tipo')
+    valor = request.form.get('valor')
+    usuario_id = session['usuario_id']
+    
+    try:
+        if tipo == 'deposito':
+            conta_controller.efetuar_deposito(usuario_id, valor)
+            flash(f"Depósito de R$ {float(valor):.2f} realizado com sucesso!", "success")
+        
+        elif tipo == 'saque':
+            conta_controller.efetuar_saque(usuario_id, valor)
+            flash(f"Saque de R$ {float(valor):.2f} realizado com sucesso!", "success")
+    
+    except Exception as e:
+        flash(str(e), "danger")
+    
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/transferir', methods=['POST'])
+def transferir():
+    if not logado():
+        return redirect(url_for('login'))
+    
+    id_origem = request.form.get('id_origem')
+    identificador_destino = request.form.get('identificador_destino')
+    metodo = request.form.get('metodo')
+    valor = request.form.get('valor')
+
+    print(f"--- DEBUG TRANSFERÊNCIA ---")
+    print(f"Destino: {identificador_destino} | Método: {metodo} | Valor: {valor}")
+    print(f"---------------------------")
+
+    try:
+        mensagem = conta_controller.transferir(id_origem, identificador_destino, valor, metodo)
+        flash(mensagem, "success")
+    except Exception as e:
+        flash(str(e), "danger")
+    
+    return redirect(url_for('dashboard'))
+
 @app.route('/perfil', methods=['GET', 'POST'])
 def perfil():
     if not logado():

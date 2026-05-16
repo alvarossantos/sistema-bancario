@@ -7,7 +7,7 @@ class ContaRepository:
     def criar(self, conta: ContaModel):
         sql = """
         INSERT INTO contas (usuario_id, numero_conta, agencia, tipo, saldo, limite_emprestimo, ativa)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s::tipo_conta, %s, %s, %s)
         RETURNING id;
         """
         params = (
@@ -43,6 +43,15 @@ class ContaRepository:
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
     
+    def atualizar_saldo(self, conta_id, novo_saldo):
+        sql = """
+        UPDATE contas SET saldo = %s WHERE id = %s;
+        """
+        params = (novo_saldo, conta_id)
+        
+        with BancoDeDados() as cursor:
+            cursor.execute(sql, params)
+    
     def buscar_por_id(self, id: int):
         sql = """
         SELECT * FROM contas WHERE id = %s;
@@ -71,7 +80,7 @@ class ContaRepository:
         
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
-            return cursor.fetchall()
+            return cursor.fetchone()
     
     def desativar_conta(self, usuario: UsuarioModel):
         sql = """
@@ -79,6 +88,29 @@ class ContaRepository:
         RETURNING id;
         """
         params = (False, usuario.id)
+        
+        with BancoDeDados() as cursor:
+            cursor.execute(sql, params)
+            return cursor.fetchone()
+    
+    def buscar_por_numero(self, numero_conta):
+        """Busca uma conta na base de dados através do seu número único"""
+        sql = """
+        SELECT * FROM contas WHERE numero_conta = %s;
+        """
+        params = (numero_conta,)
+        
+        with BancoDeDados() as cursor:
+            cursor.execute(sql, params)
+            return cursor.fetchone()
+
+    def buscar_por_cpf(self, cpf):
+        sql = """
+        SELECT c.* FROM contas c
+        JOIN usuarios u ON c.usuario_id = u.id
+        WHERE u.cpf = %s;
+        """
+        params = (cpf,)
         
         with BancoDeDados() as cursor:
             cursor.execute(sql, params)
